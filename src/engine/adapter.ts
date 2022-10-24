@@ -1,6 +1,10 @@
 import { GPUCommandRepository } from "./repository";
 
-export class GPUDeviceAdapter {
+interface GPUDeviceAdapter {
+    
+}
+
+class GPUDeviceAdapter {
     commands: GPUCommandBuffer[] = [];
     groupIndex!: number;
 

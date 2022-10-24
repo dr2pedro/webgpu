@@ -2,11 +2,12 @@ import { GPUDeviceAdapter } from "./adapter";
 import { GPUBufferUsage, GPUBufferBindingType, GPUShaderStage } from "./enums";
 import { GPUBuffer, JobSize, BufferBind, GPUBindGroupLayoutEntry } from "./types.d";
 
-export interface Buffer {
+interface Buffer {
+    index: number
     create(size: number, usage: GPUBufferUsage, mappedAtCreation: boolean, label: string): { buffer: GPUBuffer, layout: GPUBindGroupLayoutEntry }
 }
 
-export class Buffer {
+class Buffer {
     static index = 0;
     layout!:GPUBindGroupLayoutEntry;
     
@@ -31,7 +32,19 @@ export class Buffer {
     }
 }
 
-export class Command {
+interface Command {
+    encoder: globalThis.GPUCommandEncoder;
+    computation: globalThis.GPUComputePassEncoder;
+    binds: Array<BufferBind>;
+    
+    pipeline(pipeline: globalThis.GPUComputePipeline): this;
+    group(bindgroup: globalThis.GPUBindGroup, index: number): this;
+    size(jobSize: JobSize): this;
+    bindArrays(buffer1: globalThis.GPUBuffer, buffer2: globalThis.GPUBuffer, size: number, offsets: [number, number]): this;
+    end(): globalThis.GPUCommandBuffer;
+}
+
+class Command {
     encoder;
     computation;
     binds: Array<BufferBind> = [];
@@ -77,7 +90,14 @@ export class Command {
 
 }
 
-export class Group {
+interface Group {
+    layout: GPUBindGroupLayoutEntry[];
+    bindEntries: { binding: number, resource: { buffer: GPUBuffer }}[];
+
+    create(label?: string): { layout: GPUBindGroupLayout, bind: GPUBindGroup };
+}
+
+class Group {
     layout: GPUBindGroupLayoutEntry[] = [];
     bindEntries: { binding: number, resource: { buffer: GPUBuffer }}[] = [];
 
@@ -100,12 +120,18 @@ export class Group {
             bind.label = label;
         }
          return { layout, bind }
-        
     }
 }
 
-export class Pipeline {
+interface Pipeline {
+    groups: GPUBindGroupLayout[];
+
+    create(): GPUComputePipeline;
+}
+
+class Pipeline {
     groups!: GPUBindGroupLayout[];
+
     constructor(readonly adapter: GPUDeviceAdapter, readonly bindgroupslayouts: GPUBindGroupLayout[], readonly shader: any, readonly entrypoint: string) {
         this.groups = bindgroupslayouts;
     }
@@ -122,4 +148,11 @@ export class Pipeline {
         })
         return pipeline
     }
+}
+
+export {
+    Buffer,
+    Command,
+    Group,
+    Pipeline
 }
