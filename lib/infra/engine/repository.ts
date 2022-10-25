@@ -1,5 +1,14 @@
+interface GPUCommandRepository {
+    commandIndex: number;
+    commandDB: GPUCommandBuffer[];
 
-export class GPUCommandRepository {
+    push(command: globalThis.GPUCommandBuffer): void;
+    get(): GPUCommandBuffer[];
+    delete(index: number): void;
+    clear(): void;
+}
+
+class GPUCommandRepository {
     commandIndex = 0
     commandDB: GPUCommandBuffer[] = [];
     
@@ -21,4 +30,8 @@ export class GPUCommandRepository {
         this.commandDB = [];
         this.commandIndex = 0;
     }
+}
+
+export {
+    GPUCommandRepository
 }

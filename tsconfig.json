@@ -14,11 +14,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*.ts", 
-    "src/**/*.d.ts", 
-    "src/**/*.tsx", 
-    "src/**/*.vue",
+    "lib/**/*.ts", 
+    "lib/**/*.d.ts", 
+    "lib/**/*.tsx", 
+    "lib/**/*.vue",
     "node_modules/@webgpu/types/**/*"
-  ],
+, "lib/engine/adapter.test.js", "lib/engine/adapter.test.js"  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

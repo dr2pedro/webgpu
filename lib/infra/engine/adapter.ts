@@ -1,7 +1,11 @@
 import { GPUCommandRepository } from "./repository";
 
 interface GPUDeviceAdapter {
-    
+    commands: GPUCommandBuffer[];
+    groupIndex: number;
+
+    init(repository:GPUCommandRepository, options?: GPURequestAdapterOptions, descriptor?: GPUDeviceDescriptor): Promise<GPUDeviceAdapter>;
+    run(): void;
 }
 
 class GPUDeviceAdapter {
@@ -26,5 +30,8 @@ class GPUDeviceAdapter {
         this.device.queue.submit(this.commands);
         this.commands = [];
     }
+}
 
+export {
+    GPUDeviceAdapter
 }

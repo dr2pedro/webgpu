@@ -1,15 +1,15 @@
 import { GPUDeviceAdapter } from "./adapter";
 import { GPUBufferUsage, GPUBufferBindingType, GPUShaderStage } from "./enums";
-import { GPUBuffer, JobSize, BufferBind, GPUBindGroupLayoutEntry } from "./types.d";
+import { JobSize, BufferBind } from "../types";
 
 interface Buffer {
     index: number
-    create(size: number, usage: GPUBufferUsage, mappedAtCreation: boolean, label: string): { buffer: GPUBuffer, layout: GPUBindGroupLayoutEntry }
+    create(size: number, usage: GPUBufferUsage, mappedAtCreation: boolean, label: string): { buffer: globalThis.GPUBuffer, layout: globalThis.GPUBindGroupLayoutEntry }
 }
 
 class Buffer {
     static index = 0;
-    layout!:GPUBindGroupLayoutEntry;
+    layout!:globalThis.GPUBindGroupLayoutEntry;
     
     constructor(readonly adapter: GPUDeviceAdapter, readonly type?: GPUBufferBindingType) {
         this.layout = {
@@ -23,7 +23,7 @@ class Buffer {
 
     create(size: number, usage: GPUBufferUsage, mappedAtCreation = false, label?: string) {
         Buffer.index++;
-        const buffer: GPUBuffer = this.adapter.device.createBuffer({ label, mappedAtCreation, size, usage });
+        const buffer: globalThis.GPUBuffer = this.adapter.device.createBuffer({ label, mappedAtCreation, size, usage });
         const layout = this.layout
         return {
             buffer,
@@ -73,7 +73,7 @@ class Command {
         return this
     }
 
-    bindArrays(buffer1: GPUBuffer, buffer2: GPUBuffer, size: number, offsets: [number, number] = [0,0]) {
+    bindArrays(buffer1: globalThis.GPUBuffer, buffer2: globalThis.GPUBuffer, size: number, offsets: [number, number] = [0,0]) {
         this.binds.push({ buffer1, buffer2, size, offsets } as BufferBind);
         return this
     }
@@ -91,18 +91,18 @@ class Command {
 }
 
 interface Group {
-    layout: GPUBindGroupLayoutEntry[];
-    bindEntries: { binding: number, resource: { buffer: GPUBuffer }}[];
+    layout: globalThis.GPUBindGroupLayoutEntry[];
+    bindEntries: { binding: number, resource: { buffer: globalThis.GPUBuffer }}[];
 
     create(label?: string): { layout: GPUBindGroupLayout, bind: GPUBindGroup };
 }
 
 class Group {
-    layout: GPUBindGroupLayoutEntry[] = [];
-    bindEntries: { binding: number, resource: { buffer: GPUBuffer }}[] = [];
+    layout: globalThis.GPUBindGroupLayoutEntry[] = [];
+    bindEntries: { binding: number, resource: { buffer: globalThis.GPUBuffer }}[] = [];
 
-    constructor(readonly adapter: GPUDeviceAdapter, readonly bufferArray: { buffer: GPUBuffer, layout: GPUBindGroupLayoutEntry }[]) {
-        bufferArray.map((i: { buffer: GPUBuffer, layout: GPUBindGroupLayoutEntry }) => {
+    constructor(readonly adapter: GPUDeviceAdapter, readonly bufferArray: { buffer: globalThis.GPUBuffer, layout: globalThis.GPUBindGroupLayoutEntry }[]) {
+        bufferArray.map((i: { buffer: globalThis.GPUBuffer, layout: globalThis.GPUBindGroupLayoutEntry }) => {
             this.layout.push(i.layout);
             this.bindEntries.push({
                 binding: i.layout.binding,
